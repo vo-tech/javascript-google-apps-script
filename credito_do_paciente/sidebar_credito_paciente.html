@@ -1,0 +1,90 @@
+// arquivo: sidebar_credito_paciente.html
+// versão: 1.0
+// autor: Juliano Ceconi
+
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 16px;
+            background-color: #f5f5f5;
+        }
+        .nav-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .nav-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+        .nav-item:hover {
+            background-color: #f8f9fa;
+        }
+        .nav-item.active {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+        .nav-item i {
+            margin-right: 12px;
+            color: #666;
+        }
+        .nav-title {
+            padding: 16px;
+            background-color: #1976d2;
+            color: white;
+            font-weight: 500;
+            border-radius: 8px 8px 0 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-title">Navegação de Guias</div>
+    <div class="nav-container" id="sheetList">
+        <!-- As guias serão inseridas aqui dinamicamente -->
+    </div>
+
+    <script>
+        function navigateToSheet(sheetName) {
+            google.script.run.navigateToSheet(sheetName);
+        }
+
+        function updateActiveSheet(sheetName) {
+            const items = document.getElementsByClassName('nav-item');
+            for (let item of items) {
+                item.classList.remove('active');
+                if (item.getAttribute('data-sheet') === sheetName) {
+                    item.classList.add('active');
+                }
+            }
+        }
+
+        // Recebe a lista de guias do Google Apps Script
+        google.script.run
+            .withSuccessHandler(function(sheets) {
+                const container = document.getElementById('sheetList');
+                sheets.forEach(sheet => {
+                    const div = document.createElement('div');
+                    div.className = 'nav-item';
+                    div.setAttribute('data-sheet', sheet);
+                    div.innerHTML = `<i class="fas fa-table"></i>${sheet}`;
+                    div.onclick = function() {
+                        navigateToSheet(sheet);
+                    };
+                    container.appendChild(div);
+                });
+            })
+            .getSheetNames();
+    </script>
+</body>
+</html>

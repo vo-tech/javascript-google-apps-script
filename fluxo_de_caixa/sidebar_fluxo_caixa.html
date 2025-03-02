@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      /* Estilos modernos para a Sidebar */
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        color: #333;
+      }
+      h1 {
+        font-size: 22px;
+        color: #4CAF50;
+        margin-bottom: 15px;
+      }
+      .btn {
+        background-color: #4CAF50;
+        border: none;
+        color: white;
+        padding: 10px 15px;
+        text-align: center;
+        font-size: 14px;
+        margin: 5px 0;
+        cursor: pointer;
+        border-radius: 4px;
+        width: 100%;
+      }
+      .section {
+        margin-bottom: 20px;
+      }
+      #msgContainer {
+        margin-top: 15px;
+        font-style: italic;
+        color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Painel de Controle</h1>
+    
+    <!-- Botão: Reformatar Planilhas -->
+    <div class="section">
+      <button class="btn" onclick="reformatarPlanilhas()">Reformatar Planilhas</button>
+    </div>
+    
+    <!-- Botão: Registrar Lançamento (Exemplo) -->
+    <div class="section">
+      <button class="btn" onclick="registrarLancamentoExemplo()">Registrar Lançamento Exemplo</button>
+    </div>
+    
+    <!-- Botão: Atualizar Repasses -->
+    <div class="section">
+      <button class="btn" onclick="atualizarRepasses()">Atualizar Repasses</button>
+    </div>
+    
+    <!-- Botão: Gerar Backup Diário -->
+    <div class="section">
+      <button class="btn" onclick="gerarBackupDiario()">Gerar Backup Diário</button>
+    </div>
+    
+    <!-- Botão: Listar Lançamentos -->
+    <div class="section">
+      <button class="btn" onclick="listarLancamentos()">Listar Lançamentos</button>
+    </div>
+    
+    <!-- Área para exibir mensagens -->
+    <div class="section" id="msgContainer"></div>
+    
+    <script>
+      // Sistema de mensagens
+      const MessageManager = {
+        element: document.getElementById('msgContainer'),
+        timeoutId: null,
+        show: function(msg, duration = 5000) {
+          if (this.timeoutId) clearTimeout(this.timeoutId);
+          this.element.textContent = msg;
+          this.timeoutId = setTimeout(() => this.element.textContent = '', duration);
+        }
+      };
+
+      // Sistema de gerenciamento de botões
+      const ButtonManager = {
+        disableAll: function() {
+          document.querySelectorAll('.btn').forEach(btn => btn.disabled = true);
+        },
+        enableAll: function() {
+          document.querySelectorAll('.btn').forEach(btn => btn.disabled = false);
+        }
+      };
+
+      // Sistema de logging do cliente
+      const ClientLogger = {
+        logs: [],
+        
+        log(tipo, funcao, mensagem, dados = null) {
+          const entry = {
+            timestamp: new Date().toISOString(),
+            tipo,
+            funcao,
+            mensagem,
+            dados
+          };
+          
+          this.logs.push(entry);
+          console.log(`[${entry.timestamp}] ${tipo} | ${funcao} | ${mensagem}`, dados || '');
+          
+          // Manter apenas os últimos 100 logs
+          if (this.logs.length > 100) {
+            this.logs.shift();
+          }
+        },
+        
+        info(funcao, mensagem, dados = null) {
+          this.log('INFO', funcao, mensagem, dados);
+        },
+        
+        error(funcao, mensagem, erro) {
+          this.log('ERROR', funcao, mensagem, {
+            error: erro.message,
+            stack: erro.stack
+          });
+        },
+        
+        debug(funcao, mensagem, dados = null) {
+          this.log('DEBUG', funcao, mensagem, dados);
+        },
+        
+        // Enviar logs para o servidor
+        async enviarLogs() {
+          if (this.logs.length === 0) return;
+          
+          try {
+            await google.script.run
+              .withSuccessHandler(() => {
+                this.logs = [];
+                console.log('Logs enviados com sucesso');
+              })
+              .withFailureHandler(error => {
+                console.error('Erro ao enviar logs:', error);
+              })
+              .registrarLogsCliente(this.logs);
+          } catch (error) {
+            console.error('Erro ao enviar logs:', error);
+          }
+        }
+      };
+
+      // Funções dos botões
+      function reformatarPlanilhas() {
+        executarAcaoServidor('formatarAbas', null, 'Planilhas reformatadas com sucesso!');
+      }
+
+      function registrarLancamentoExemplo() {
+        const novoLancamento = {
+          data: new Date().toISOString().split('T')[0],
+          descricao: "Venda Exemplo",
+          tipo: "Receita",
+          categoria: "Vendas",
+          valor: 500,
+          formaPagamento: "PIX",
+          conta: "Digital",
+          sede: "ocultado",
+          observacoes: "Lançamento de exemplo"
+        };
+        
+        executarAcaoServidor('registrarLancamento', novoLancamento, 'Lançamento registrado com sucesso!');
+      }
+
+      function atualizarRepasses() {
+        // Validar percentual antes de enviar
+        const percentual = 80;
+        if (typeof percentual !== 'number' || percentual < 0 || percentual > 100) {
+          MessageManager.show('Percentual inválido');
+          return;
+        }
+        executarAcaoServidor('atualizarRepasses', percentual, 'Repasses atualizados com sucesso!');
+      }
+
+      function gerarBackupDiario() {
+        executarAcaoServidor('backupDiario', false, 'Backup iniciado...');
+      }
+
+      function listarLancamentos() {
+        executarAcaoServidor('listarLancamentos', null, 'Consultando lançamentos...');
+      }
+
+      // Função central para executar ações no servidor
+      function executarAcaoServidor(funcao, params, sucessoMsg) {
+        ButtonManager.disableAll();
+        MessageManager.show('Processando...');
+        
+        ClientLogger.info(funcao, 'Iniciando execução', { params });
+        
+        google.script.run
+          .withSuccessHandler(response => {
+            ButtonManager.enableAll();
+            ClientLogger.info(funcao, 'Resposta recebida', response);
+            
+            if (response && response.message) {
+              MessageManager.show(response.message);
+            } else {
+              MessageManager.show(sucessoMsg);
+            }
+            
+            // Enviar logs para o servidor a cada resposta bem-sucedida
+            ClientLogger.enviarLogs();
+          })
+          .withFailureHandler(error => {
+            ButtonManager.enableAll();
+            ClientLogger.error(funcao, 'Erro na execução', error);
+            MessageManager.show(`Erro: ${error.message || 'Erro desconhecido'}`);
+            
+            // Enviar logs mesmo em caso de erro
+            ClientLogger.enviarLogs();
+          })[funcao](params);
+      }
+    </script>
+  </body>
+</html>

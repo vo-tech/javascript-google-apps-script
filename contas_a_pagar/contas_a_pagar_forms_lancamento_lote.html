@@ -1,0 +1,134 @@
+// Versão: 1.1
+// Autor: Juliano Ceconi
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Lançamento de Contas a Pagar em Lote</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .form-container {
+      background: #fff;
+      padding: 20px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      width: 350px;
+    }
+    .form-container h2 {
+      margin-bottom: 15px;
+      font-weight: bold;
+      color: #154734;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #154734;
+    }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #154734;
+      border-radius: 5px;
+    }
+    .form-group button {
+      width: 100%;
+      padding: 10px;
+      background-color: #154734;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .form-group button:hover {
+      background-color: #103927;
+    }
+    .message {
+      text-align: center;
+      margin-top: 10px;
+      font-weight: bold;
+      color: #154734;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Lançar Contas a Pagar</h2>
+    <div class="form-group">
+      <label for="beneficiado">Beneficiado:</label>
+      <input type="text" id="beneficiado" name="beneficiado" required>
+    </div>
+    <div class="form-group">
+      <label for="motivo">Motivo:</label>
+      <input type="text" id="motivo" name="motivo" required>
+    </div>
+    <div class="form-group">
+      <label for="dataInicial">Data Inicial:</label>
+      <input type="date" id="dataInicial" name="dataInicial" required>
+    </div>
+    <div class="form-group">
+      <label for="numMeses">Número de Meses:</label>
+      <input type="number" id="numMeses" name="numMeses" min="1" required>
+    </div>
+    <div class="form-group">
+      <label for="competenciaInicial">Competência Inicial:</label>
+      <select id="competenciaInicial" name="competenciaInicial" required>
+        <option value="01/25">01/25</option>
+        <option value="02/25">02/25</option>
+        <option value="03/25">03/25</option>
+        <option value="04/25">04/25</option>
+        <option value="05/25">05/25</option>
+        <option value="06/25">06/25</option>
+        <option value="07/25">07/25</option>
+        <option value="08/25">08/25</option>
+        <option value="09/25">09/25</option>
+        <option value="10/25">10/25</option>
+        <option value="11/25">11/25</option>
+        <option value="12/25">12/25</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="valor">Valor:</label>
+      <input type="text" id="valor" name="valor" required>
+    </div>
+    <div class="form-group">
+      <button type="button" onclick="lancarContas()">Lançar</button>
+    </div>
+    <div id="mensagem" class="message"></div>
+  </div>
+
+  <script>
+    function lancarContas() {
+      console.log("Botão clicado");
+      const beneficiado = document.getElementById('beneficiado').value;
+      const motivo = document.getElementById('motivo').value;
+      const dataInicial = document.getElementById('dataInicial').value;
+      const numMeses = parseInt(document.getElementById('numMeses').value);
+      const competenciaInicial = parseInt(document.getElementById('competenciaInicial').value);
+      const valor = parseFloat(document.getElementById('valor').value);
+      
+      if (isNaN(numMeses) || isNaN(competenciaInicial) || isNaN(valor)) {
+        document.getElementById('mensagem').innerText = 'Por favor, preencha todos os campos corretamente.';
+        console.log("Campos inválidos");
+        return;
+      }
+      
+      console.log("Enviando dados para Google Apps Script");
+      google.script.run.withSuccessHandler(function(response) {
+        document.getElementById('mensagem').innerText = response;
+        console.log("Resposta recebida: " + response);
+      }).lancarContas(beneficiado, motivo, dataInicial, numMeses, competenciaInicial, valor);
+    }
+  </script>
+</body>
+</html>

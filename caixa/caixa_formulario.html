@@ -1,0 +1,247 @@
+// arquivo: formulario.html
+// versão: 1.2
+// autor: ocultado Ceconi
+
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      font-family: 'Google Sans', sans-serif;
+      background-color: #f4f7f8;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    
+    .container {
+      background-color: #ffffff;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      max-width: 600px;
+      width: 100%;
+    }
+
+    h2 {
+      text-align: center;
+      color: #154734;
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #154734;
+    }
+
+    input[type="text"], input[type="date"], select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-size: 16px;
+      transition: border-color 0.3s ease-in-out;
+    }
+
+    input[type="text"]:focus, input[type="date"]:focus, select:focus {
+      border-color: #154734;
+      outline: none;
+    }
+
+    input[type="button"] {
+      background-color: #154734;
+      color: white;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 18px;
+      transition: background-color 0.3s ease-in-out;
+    }
+
+    input[type="button"]:hover {
+      background-color: #136b4e;
+    }
+    
+    .form-footer {
+      text-align: center;
+      margin-top: 20px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Adicionar Lançamento</h2>
+    <form>
+
+      <label for="filtro">Filtro:</label>
+      <select id="filtro">
+        <option value="Despesa">Despesa</option>
+        <option value="Assinatura">Assinatura</option>
+        <option value="Investimento">Investimento</option>
+        <option value="Clínica">Clínica</option>
+        <option value="Estorno">Estorno</option>
+        <option value="Marketing">Marketing</option>
+        <option value="Repasse">Repasse</option>
+      </select>
+
+      <label for="dataPagamento">Data do Pagamento:</label>
+      <input type="date" id="dataPagamento">
+
+      <label for="responsavel">Responsável:</label>
+      <select id="responsavel">
+        <option value="ocultado">ocultado</option>
+        <option value="ocultado">ocultado</option>
+        <option value="ocultado">ocultado</option>
+        <option value="ocultado">ocultado</option>
+        <option value="ocultado">ocultado</option>
+        <option value="ocultado">ocultado</option>
+        <option value="ocultado">ocultado</option>
+        <option value="ocultado">ocultado</option>
+        <option value="ocultado">ocultado</option>
+        <option value="ocultado">ocultado</option>
+        <option value="ocultado">ocultado</option>
+        <option value="ocultado">ocultado</option>
+        <option value="ocultado">ocultado</option>
+        <option value="ocultado">ocultado</option>
+        <option value="ocultado">ocultado</option>
+        <option value="ocultado">ocultado</option>
+        <option value="ocultado">ocultado</option>
+        <option value="ocultado">ocultado</option>
+        <option value="ocultado">ocultado</option>
+      </select>
+
+      <label for="cidade">Cidade:</label>
+      <select id="cidade">
+        <option value="ocultado">ocultado</option>
+        <option value="ocultado">ocultado</option>
+        <option value="ocultado">ocultado</option>
+        <option value="4 Global">4 Global</option>
+      </select>
+
+      <label for="formaPagamento">Forma de Pagamento:</label>
+      <select id="formaPagamento">
+        <option value="Banco">Banco</option>
+        <option value="Crédito">Crédito</option>
+        <option value="Débito">Débito</option>
+        <option value="Desconto Na Folha">Desconto Na Folha</option>
+        <option value="Dinheiro">Dinheiro</option>
+        <option value="Pix">Pix</option>
+      </select>
+
+      <label for="setor">Setor:</label>
+      <select id="setor">
+        <option value="Comercial">Comercial</option>
+        <option value="Consultórios">Consultórios</option>
+        <option value="Contábil">Contábil</option>
+        <option value="Custo com Fornecedor">Custo com Fornecedor</option>
+        <option value="Equipe (Bonificações)">Equipe (Bonificações)</option>
+        <option value="Estorno">Estorno</option>
+        <option value="Financeiro">Financeiro</option>
+        <option value="Jurídico">Jurídico</option>
+        <option value="Marketing">Marketing</option>
+        <option value="Operações/Logística">Operações/Logística</option>
+        <option value="Recepção">Recepção</option>
+        <option value="Rh">Rh</option>
+        <option value="Sócios">Sócios</option>
+        <option value="Ti">Ti</option>
+      </select>
+
+      <label for="grupoDespesa">Grupo de Despesa:</label>
+      <select id="grupoDespesa">
+        <option value="Alimentação">Alimentação</option>
+        <option value="Aluguel">Aluguel</option>
+        <option value="Aluguel Impressoras">Aluguel Impressoras</option>
+        <option value="Aniversário">Aniversário</option>
+        <option value="Aquisição">Aquisição</option>
+        <option value="Benefício">Benefício</option>
+        <option value="Bonificação">Bonificação</option>
+        <option value="Campanha">Campanha</option>
+        <option value="Cancelamento">Cancelamento</option>
+        <option value="Clube De Benefícios">Clube De Benefícios</option>
+        <option value="Comissão">Comissão</option>
+        <option value="Comunicação Visual">Comunicação Visual</option>
+        <option value="Consultoria">Consultoria</option>
+        <option value="Contabilidade">Contabilidade</option>
+        <option value="Estorno">Estorno</option>
+        <option value="Imposto">Imposto</option>
+        <option value="Imposto Venda">Imposto Venda</option>
+        <option value="Investimento">Investimento</option>
+        <option value="Jurídico">Jurídico</option>
+        <option value="Mantimentos">Mantimentos</option>
+        <option value="Manutenção">Manutenção</option>
+        <option value="Mão de obra">Mão de obra</option>
+        <option value="Material De Escritório">Material De Escritório</option>
+        <option value="Material De Limpeza">Material De Limpeza</option>
+        <option value="Mercado">Mercado</option>
+        <option value="Mkt">Mkt</option>
+        <option value="Obra">Obra</option>
+        <option value="Outros">Outros</option>
+        <option value="Patente">Patente</option>
+        <option value="Patrocínio">Patrocínio</option>
+        <option value="Pro-Labore">Pro-Labore</option>
+        <option value="Radio">Radio</option>
+        <option value="Repasse">Repasse</option>
+        <option value="Salário">Salário</option>
+        <option value="Serviço">Serviço</option>
+        <option value="Serviços Básicos">Serviços Básicos</option>
+        <option value="Sistema">Sistema</option>
+        <option value="Tarifa Banco">Tarifa Banco</option>
+        <option value="Taxa Adm">Taxa Adm</option>
+        <option value="Transporte">Transporte</option>
+        <option value="Uniformes">Uniformes</option>
+      </select>
+
+      <label for="descricaoDespesa">Descrição da Despesa:</label>
+      <input type="text" id="descricaoDespesa" placeholder="Digite a descrição">
+
+      <label for="valor">Valor:</label>
+      <input type="text" id="valor" placeholder="Digite o valor">
+
+      <label for="competencia">Competência:</label>
+      <input type="text" id="competencia" placeholder="Digite a competência">
+
+      <input type="button" value="Salvar" onclick="salvar()">
+    </form>
+  </div>
+
+  <script>
+    function salvar() {
+      var valorInput = document.getElementById("valor").value;
+      var valorFormatado = parseFloat(valorInput.replace(',', '.')).toFixed(2).replace('.', ',');
+
+      var dados = {
+        filtro: document.getElementById("filtro").value,
+        dataPagamento: document.getElementById("dataPagamento").value,
+        responsavel: document.getElementById("responsavel").value,
+        cidade: document.getElementById("cidade").value,
+        formaPagamento: document.getElementById("formaPagamento").value,
+        setor: document.getElementById("setor").value,
+        grupoDespesa: document.getElementById("grupoDespesa").value,
+        descricaoDespesa: document.getElementById("descricaoDespesa").value,
+        valor: valorFormatado,
+        competencia: document.getElementById("competencia").value,
+      };
+      
+      // Ajustando o formato da data antes de enviar
+      var dataPagamento = new Date(dados.dataPagamento);
+      dataPagamento.setDate(dataPagamento.getDate() + 1);  // Corrige a data adicionando 1 dia
+      dados.dataPagamento = dataPagamento.toISOString().split('T')[0];
+
+      google.script.run.salvarDados(dados);
+      alert('Dados salvos!');
+    }
+  </script>
+</body>
+</html>

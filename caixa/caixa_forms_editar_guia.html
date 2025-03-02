@@ -1,0 +1,256 @@
+// arquivo: editarGuia.html
+// versão: 1.4
+// autor: Juliano Ceconi
+
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    :root { 
+      --cor-primaria: #154734; 
+      --cor-secundaria: #ffffff; 
+    }
+    body { 
+      font-family: 'Roboto', sans-serif; 
+      margin: 0; 
+      padding: 20px; 
+      background: var(--cor-secundaria); 
+      color: var(--cor-primaria); 
+    }
+    .scroll-container { 
+      max-height: 70vh; 
+      overflow-y: auto; 
+      padding-right: 10px; 
+    }
+    .form-group { 
+      margin-bottom: 12px; 
+    }
+    label { 
+      display: block; 
+      margin-bottom: 3px; 
+      font-weight: 500; 
+    }
+    input, select { 
+      width: 100%; 
+      padding: 6px; 
+      border: 1px solid var(--cor-primaria); 
+      border-radius: 3px; 
+      box-sizing: border-box; 
+    }
+    .required::after { 
+      content: "*"; 
+      color: red; 
+      margin-left: 2px; 
+    }
+    h1 { 
+      color: var(--cor-primaria); 
+      font-size: 1.3em; 
+      margin-bottom: 15px; 
+      border-bottom: 2px solid var(--cor-primaria); 
+      padding-bottom: 8px; 
+    }
+    button { 
+      background: var(--cor-primaria); 
+      color: white; 
+      padding: 8px 16px; 
+      border: none; 
+      border-radius: 3px; 
+      cursor: pointer; 
+      transition: opacity 0.2s; 
+    }
+    button:hover { 
+      opacity: 0.9; 
+    }
+    button:disabled { 
+      opacity: 0.6; 
+      cursor: not-allowed; 
+    }
+    .loading { 
+      text-align: center; 
+      padding: 20px; 
+      color: #154734; 
+    }
+    .error { 
+      color: red; 
+      padding: 10px; 
+      background: #ffe6e6; 
+      border: 1px solid #ffcccc; 
+      border-radius: 4px; 
+      margin: 10px 0; 
+    }
+  </style>
+</head>
+<body>
+  <h1>Editando Guia <?= guiaId ?></h1>
+  <div class="scroll-container">
+    <div id="loading" class="loading">Carregando dados...</div>
+    <form id="editarGuiaForm" onsubmit="handleSubmit(event)" style="display: none;">
+      <div id="dynamicFields"></div>
+      <button type="submit" id="submitBtn">Salvar Alterações</button>
+    </form>
+  </div>
+
+  <script>
+    const fields = [
+      { header: 'Guia', type: 'text', readonly: true },
+      { header: 'Auditado em', type: 'date' },
+      { header: 'TIPO', type: 'text' },
+      { header: 'FILTRO', type: 'text' },
+      { header: 'Responsável', type: 'text' },
+      { header: 'Cidade', type: 'text' },
+      { header: 'Emissão', type: 'date' },
+      { header: 'Data Guia', type: 'date' },
+      { header: 'Forma de Recebimento', type: 'select', options: ['', 'Dinheiro', 'Cartão', 'Transferência'] },
+      { header: 'Valor Recebido', type: 'number', attrs: 'step="0.01" placeholder="0,00"' },
+      { header: 'Valor de repasse', type: 'number', attrs: 'step="0.01" placeholder="0,00"' },
+      { header: 'Valor comissão', type: 'number', attrs: 'step="0.01" placeholder="0,00"' },
+      { header: 'procedimento', type: 'text' },
+      { header: 'Instituição', type: 'text' },
+      { header: 'Tipo Instituição', type: 'select', options: ['', 'Pública', 'Privada'] },
+      { header: 'Data Repasse', type: 'date' },
+      { header: 'Data NF', type: 'date' },
+      { header: 'Competência', type: 'month' },
+      { header: 'Paciente', type: 'text' },
+      { header: 'Conferência', type: 'select', options: ['', 'OK', 'Pendente'] },
+      { header: 'Cobertura', type: 'text' },
+      { header: 'dif', type: 'number' },
+      { header: 'Categoria', type: 'text' }
+    ];
+
+    function normalizeId(str) {
+      return str.normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/\s+/g, '');
+    }
+
+    function formatDate(date) {
+      if (!(date instanceof Date)) return '';
+      const offset = date.getTimezoneOffset();
+      const adjustedDate = new Date(date.getTime() - (offset * 60 * 1000));
+      return adjustedDate.toISOString().split('T')[0];
+    }
+
+    function generateFields(guiaData) {
+      try {
+        if (!guiaData) throw new Error('Dados da guia não disponíveis');
+        
+        return fields.map(field => {
+          const fieldId = normalizeId(field.header);
+          const rawValue = guiaData[fieldId] || '';
+          let value = rawValue;
+
+          // Conversão de datas
+          if (field.type === 'date' && rawValue instanceof Date) {
+            value = formatDate(rawValue);
+          }
+
+          // Tratamento de números
+          if (field.type === 'number' && typeof rawValue === 'number') {
+            value = rawValue.toFixed(2).replace('.', ',');
+          }
+
+          // Campos select
+          if (field.type === 'select') {
+            return `
+              <div class="form-group">
+                <label>${field.header}</label>
+                <select id="${fieldId}">
+                  ${field.options.map(option => `
+                    <option value="${option}" ${option === value ? 'selected' : ''}>
+                      ${option}
+                    </option>
+                  `).join('')}
+                </select>
+              </div>
+            `;
+          }
+
+          // Demais campos
+          return `
+            <div class="form-group">
+              <label>${field.header}</label>
+              <input type="${field.type}" 
+                     id="${fieldId}" 
+                     ${field.attrs || ''}
+                     ${field.readonly ? 'readonly' : ''}
+                     value="${value}">
+            </div>
+          `;
+        }).join('');
+
+      } catch (error) {
+        console.error('Erro ao gerar campos:', error);
+        return `<div class="error">Erro ao carregar formulário: ${error.message}</div>`;
+      }
+    }
+
+    function handleSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      const originalText = btn.textContent;
+      
+      btn.disabled = true;
+      btn.textContent = 'Salvando...';
+
+      const formData = Array.from(document.querySelectorAll('input, select')).reduce((acc, el) => {
+        let value = el.value;
+        
+        // Conversão de números brasileiros
+        if (el.type === 'number') {
+          value = parseFloat(value.replace(',', '.')) || 0;
+        }
+        
+        acc[normalizeId(el.id)] = value;
+        return acc;
+      }, {});
+
+      google.script.run
+        .withSuccessHandler(() => {
+          google.script.host.close();
+        })
+        .withFailureHandler(error => {
+          console.error('Erro detalhado:', error);
+          btn.disabled = false;
+          btn.textContent = originalText;
+          alert(`Erro ao salvar: ${error.message}`);
+        })
+        .updateGuia(formData);
+    }
+
+    function initForm() {
+      const guiaId = '<?= guiaId ?>';
+      
+      if (!guiaId) {
+        document.getElementById('loading').innerHTML = '<div class="error">ID da guia não especificado</div>';
+        return;
+      }
+
+      google.script.run
+        .withSuccessHandler(data => {
+          if (!data) {
+            document.getElementById('loading').innerHTML = '<div class="error">Guia não encontrada</div>';
+            return;
+          }
+          
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('editarGuiaForm').style.display = 'block';
+          document.getElementById('dynamicFields').innerHTML = generateFields(data);
+        })
+        .withFailureHandler(error => {
+          console.error('Erro completo:', error);
+          document.getElementById('loading').innerHTML = `
+            <div class="error">
+              Falha ao carregar dados: ${error.message}<br>
+              (Guia ID: ${guiaId})
+            </div>
+          `;
+        })
+        .getGuiaById(guiaId);
+    }
+
+    // Inicialização
+    window.onload = initForm;
+  </script>
+</body>
+</html>

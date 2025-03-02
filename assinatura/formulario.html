@@ -1,0 +1,179 @@
+// Versão: 1.0
+// Autor: Juliano Ceconi
+
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #154734;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .container {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      max-width: 600px;
+      width: 100%;
+    }
+
+    h2 {
+      text-align: center;
+      color: #154734;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #154734;
+    }
+
+    input[type="text"], input[type="number"], input[type="date"], select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 2px solid #154734;
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-size: 16px;
+      color: #154734;
+      background-color: #f4f7f8;
+    }
+
+    input[type="button"] {
+      background-color: #154734;
+      color: white;
+      padding: 15px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+
+    input[type="button"]:hover {
+      background-color: #0f3e2a;
+    }
+
+    .loading {
+      text-align: center;
+      font-size: 16px;
+      color: #154734;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Cadastrar Assinante</h2>
+    <form>
+      <label for="titular">Titular:</label>
+      <input type="text" id="titular" placeholder="Nome do Titular">
+
+      <label for="status">Status:</label>
+      <select id="status">
+        <option value="Ativo">Ativo</option>
+        <option value="Inativo">Inativo</option>
+      </select>
+
+      <label for="formaPagamento">Forma de Pagamento:</label>
+      <select id="formaPagamento">
+        <option value="Boleto">Boleto</option>
+        <option value="Cartão de crédito">Cartão de crédito</option>
+        <option value="Recorrente">Recorrente</option>
+        <option value="Dinheiro">Dinheiro</option>
+        <option value="Cortesia">Cortesia</option>
+        <option value="Outro">Outro</option>
+      </select>
+
+      <label for="valorTotal">Valor Total:</label>
+      <input type="number" id="valorTotal" placeholder="Valor Total" min="0">
+
+      <label for="diaVencimento">Dia do Vencimento:</label>
+      <input type="number" id="diaVencimento" placeholder="Dia do Vencimento" min="1" max="31">
+
+      <label for="assinatura">Assinatura:</label>
+      <select id="assinatura">
+        <option value="Ouro">Ouro</option>
+        <option value="Empresarial">Empresarial</option>
+        <option value="Platina">Platina</option>
+        <option value="Prata">Prata</option>
+        <option value="Personalizado">Personalizado</option>
+      </select>
+
+      <label for="falta">Falta:</label>
+      <input type="text" id="falta" placeholder="Falta">
+
+      <label for="dataVenda">Data da Venda:</label>
+      <input type="date" id="dataVenda" pattern="\d{2}/\d{2}/\d{4}">
+
+      <label for="vendedor">Vendedor:</label>
+      <select id="vendedor">
+        <option value="ocultado">ocultado</option>
+        <option value="ocultado">ocultado</option>
+        <option value="ocultado">ocultado</option>
+        <option value="ocultado">ocultado</option>
+        <option value="ocultado">ocultado</option>
+      </select>
+
+      <input type="button" id="salvarButton" value="Salvar" onclick="salvar()">
+      <div id="loadingMessage" class="loading" style="display: none;">Salvando, por favor aguarde...</div>
+    </form>
+  </div>
+
+  <script>
+    function salvar() {
+      var salvarButton = document.getElementById("salvarButton");
+      var loadingMessage = document.getElementById("loadingMessage");
+
+      // Desativa o botão salvar e mostra a mensagem de carregamento
+      salvarButton.disabled = true;
+      loadingMessage.style.display = "block";
+
+      var dados = {
+        titular: document.getElementById("titular").value,
+        status: document.getElementById("status").value,
+        formaPagamento: document.getElementById("formaPagamento").value,
+        valorTotal: document.getElementById("valorTotal").value,
+        diaVencimento: document.getElementById("diaVencimento").value,
+        assinatura: document.getElementById("assinatura").value,
+        falta: document.getElementById("falta").value,
+        dataVenda: formatarData(document.getElementById("dataVenda").value),
+        vendedor: document.getElementById("vendedor").value
+      };
+
+      // Chama a função no Google Apps Script para salvar os dados
+      google.script.run
+        .withSuccessHandler(function() {
+          alert('Dados salvos com sucesso!');
+          salvarButton.disabled = false;
+          loadingMessage.style.display = "none";
+        })
+        .withFailureHandler(function(error) {
+          alert('Ocorreu um erro ao salvar os dados. Tente novamente. Erro: ' + error.message);
+          salvarButton.disabled = false;
+          loadingMessage.style.display = "none";
+        })
+        .salvarDados(dados);
+    }
+
+    function formatarData(data) {
+      if (!data) return '';
+      var partes = data.split("-");
+      return partes[2] + "/" + partes[1] + "/" + partes[0];
+    }
+  </script>
+</body>
+</html>
